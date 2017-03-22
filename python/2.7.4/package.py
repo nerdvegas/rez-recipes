@@ -11,9 +11,11 @@ description = \
     The Python programming language.
     """
 
-variants = [
-    ["platform-osx", "arch-x86_64", "os-osx-10"]
-]
+@early()
+def variants():
+    from rez.package_py_utils import expand_requires
+    requires = ["platform-**", "arch-**", "os-**"]
+    return [expand_requires(*requires)]
 
 tools = [
     "2to3",
@@ -32,10 +34,6 @@ uuid = "recipes.python"
 
 def commands():
     env.PATH.append("{root}/bin")
-    env.PYTHONPATH.append("{root}/lib/python2.7")
 
     if building:
-        env.PYTHON_INCLUDE_DIR = "{root}/include/python2.7"
-
-        # only used to see libpythonX.X.a file
-        env.LD_LIBRARY_PATH.append("{root}/lib")
+        env.CMAKE_MODULE_PATH.append("{root}/cmake")

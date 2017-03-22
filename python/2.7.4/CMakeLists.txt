@@ -16,3 +16,8 @@ ExternalProject_add(
     BUILD_COMMAND make -j$ENV{REZ_BUILD_THREAD_COUNT} VERBOSE=1
     BUILD_IN_SOURCE 1
 )
+
+install(
+    FILES FindPython.cmake
+    DESTINATION cmake
+)
