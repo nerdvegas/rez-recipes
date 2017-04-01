@@ -11,3 +11,5 @@ def version():
     return system.arch
 
 uuid = "recipes.arch"
+
+_native = True

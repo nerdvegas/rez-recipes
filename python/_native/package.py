@@ -9,7 +9,7 @@ name = "python"
 
 @early()
 def version():
-    return this.__version + "-system"
+    return this.__version + "-native"
 
 authors = [
     "Guido van Rossum"
@@ -19,12 +19,6 @@ description = \
     """
     The Python programming language.
     """
-
-@early()
-def variants():
-    from rez.package_py_utils import expand_requires
-    requires = ["platform-**", "arch-**", "os-**"]
-    return [expand_requires(*requires)]
 
 @early()
 def tools():
@@ -46,36 +40,40 @@ def commands():
     if building:
         env.CMAKE_MODULE_PATH.append("{root}/cmake")
 
+_native = True
+
+@early()
+def _site_paths():
+    from rez.package_py_utils import exec_python
+    import ast
+
+    out = exec_python(
+        "_site_paths",
+        ["import site",
+         "print site.getsitepackages()"])
+
+    return ast.literal_eval(out.strip())
+
 
 # --- internals
 
-def _exec_python(attr, src):
-    import subprocess
-
-    p = subprocess.Popen(
-        ["python", "-c", src],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-
-    if p.returncode:
-        from rez.exceptions import InvalidPackageError
-        raise InvalidPackageError(
-            "Error determining package attribute '%s':\n%s" % (attr, err))
-
-    return out.strip()
-
-
 @early()
 def _bin_path():
-    return this._exec_python(
+    from rez.package_py_utils import exec_python
+
+    return exec_python(
         "_bin_path",
-        "import sys, os.path; print os.path.dirname(sys.executable)")
+        ["import sys, os.path",
+         "print os.path.dirname(sys.executable)"])
 
 
 def _version():
-    return _exec_python(
+    from rez.package_py_utils import exec_python
+
+    return exec_python(
         "version",
-        "import sys; print sys.version.split()[0]")
+        ["import sys",
+         "print sys.version.split()[0]"])
 
 
 __version = _version()

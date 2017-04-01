@@ -11,3 +11,5 @@ def version():
     return system.platform
 
 uuid = "recipes.platform"
+
+_native = True

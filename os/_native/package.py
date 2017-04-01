@@ -11,3 +11,5 @@ def version():
     return system.os
 
 uuid = "recipes.os"
+
+_native = True

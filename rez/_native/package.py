@@ -37,25 +37,15 @@ def commands():
     env.PATH.append("{this.root}/bin")
     env.PYTHONPATH.append("{this.root}/python")
 
+_native = True
+
 
 # --- internals
 
-def _exec(attr, cmd):
-    import subprocess
-
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-
-    if p.returncode:
-        from rez.exceptions import InvalidPackageError
-        raise InvalidPackageError(
-            "Error determining package attribute '%s':\n%s" % (attr, err))
-
-    return out.strip(), err.strip()
-
-
 def _version():
-    out, err = _exec(
+    from rez.package_py_utils import exec_command
+
+    out, err = exec_command(
         "version",
         ["rez", "--version"])
 
@@ -67,8 +57,12 @@ def _version():
 
 
 def _python_version():
-    out, _ = _exec(
+    from rez.package_py_utils import exec_python
+
+    out = exec_python(
         "_python_version",
-        ["rez-python", "-c", "import sys; print sys.version.split()[0]"])
+        ["import sys",
+         "print sys.version.split()[0]"],
+         executable="rez-python")
 
     return out
