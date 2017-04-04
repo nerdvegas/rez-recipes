@@ -44,10 +44,15 @@ _native = True
 
 def _version():
     from rez.package_py_utils import exec_command
+    import os.path
+    import sys
+
+    rez_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    rez_exe = os.path.join(rez_dir, "rez")
 
     out, err = exec_command(
         "version",
-        ["rez", "--version"])
+        [rez_exe, "--version"])
 
     # https://bugs.python.org/issue18920
     txt = err or out

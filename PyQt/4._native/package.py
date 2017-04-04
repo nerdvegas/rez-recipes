@@ -20,6 +20,10 @@ build_command = False
 
 uuid = "recipes.pyqt"
 
+def commands():
+    # Qt.py support
+    env.QT_PREFERRED_BINDING = "PyQt4"
+
 _native = True
 
 

@@ -20,6 +20,10 @@ build_command = False
 
 uuid = "recipes.pyside"
 
+def commands():
+    # Qt.py support
+    env.QT_PREFERRED_BINDING = "PySide"
+
 _native = True
 
 
