@@ -66,8 +66,9 @@ def _python_version():
 
     out = exec_python(
         "_python_version",
-        ["import sys",
-         "print sys.version.split()[0]"],
+        ["from __future__ import print_function",
+         "import sys",
+         "print(sys.version.split()[0])"],
          executable="rez-python")
 
     return out
