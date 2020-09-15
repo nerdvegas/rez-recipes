@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import subprocess
 import shutil
 import sys
@@ -8,7 +10,7 @@ import stat
 
 if __name__ == "__main__":
     if os.getenv("REZ_BUILD_INSTALL") != "1":
-        print >> sys.stderr, "Nothing to do (install with -i)."
+        print("Nothing to do (install with -i).", file=sys.stderr)
         sys.exit(0)
 
     install_path = os.getenv("REZ_BUILD_INSTALL_PATH")
@@ -17,9 +19,20 @@ if __name__ == "__main__":
     if not os.path.exists(install_py_path):
         os.mkdir(install_py_path)
 
+    popen_args = {
+        "stdout": subprocess.PIPE, 
+        "stderr": subprocess.PIPE,
+    }
+
+    if sys.version_info[0] >= 3:
+        # In Python 3, Popen returns bytes instead of str objects. The 
+        # os.path.join function can't mix bytes and str, so we force Popen to 
+        # give us str objects, using default encoding.
+        popen_args["text"] = True
+
     p = subprocess.Popen(
-        ["rez-python", "-c", "import rez; print rez.__path__[0]"],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ["rez-python", "-c", "from __future__ import print_function; import rez; print(rez.__path__[0])"],
+        **popen_args)
 
     out, _ = p.communicate()
     site_path = os.path.dirname(out)
@@ -32,7 +45,7 @@ if __name__ == "__main__":
         dest_path = os.path.join(install_py_path, dirname)
 
         if os.path.exists(dest_path):
-            print >> sys.stderr, "Package already installed."
+            print("Package already installed.", file=sys.stderr)
             sys.exit(1)
 
         ignore = shutil.ignore_patterns("*.pyc", "*.pyo")
